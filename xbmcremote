@@ -1,0 +1,22 @@
+#!/usr/bin/env python2
+import argparse
+import logging
+from xbmc.remote import Remote
+    
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser.add_argument('--host', dest='host', action='store', required=True)
+    parser.add_argument('-t', dest='toggle', action='store_const', const=32)
+    parser.add_argument('-c', '--client', dest='client', action='store_true', default=False)
+    parser.add_argument('-v', '--verbose', dest='verbose', action='store_true', default=False)
+    args = parser.parse_args()
+    logging.root.name = 'xbmcremote'
+    if args.verbose:
+        logging.basicConfig(level=logging.DEBUG)
+    r = Remote(args.host)
+    if args.client:
+        r.run()
+    else:
+        r.command(args.toggle)
+
+
