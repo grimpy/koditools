@@ -2,7 +2,7 @@
 import argparse
 import logging
 from xbmc.remote import Remote
-    
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Process some integers.')
     parser.add_argument('--host', dest='host', action='store', required=True)
@@ -18,5 +18,3 @@ if __name__ == '__main__':
         r.run()
     else:
         r.command(args.toggle)
-
-

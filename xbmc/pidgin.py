@@ -5,7 +5,7 @@ from htmllib import HTMLParser
 from formatter import AbstractFormatter, DumbWriter
 from cStringIO import StringIO
 from dbus.mainloop.glib import DBusGMainLoop
-from .restclient import JsonRPC
+from .xbmcclient import XBMCClient
 
 def html2text(html):
     output = StringIO()
@@ -18,7 +18,8 @@ def html2text(html):
 
 class Forwarder(object):
     def __init__(self, host):
-        self._client = JsonRPC('http://%s:8080/jsonrpc' % host)
+        self._client = XBMCClient('XBMCPidgin', ip=host)
+        self._client.connect()
         DBusGMainLoop(set_as_default=True)
         self._bus = dbus.SessionBus()
 
@@ -32,5 +33,5 @@ class Forwarder(object):
 
     def receiveIM(self, account, sender, message, conversation, flags):
         logging.info("Recevied msg from %s: %s" % (sender, message))
-        self._client.command('GUI.ShowNotification', title='%s says' % sender, message=html2text(message))
+        self._client.send_notification(title='%s says' % sender, message=html2text(message))
 
