@@ -77,13 +77,15 @@ class Remote(object):
             return False
         if 'action' in command:
             result = self.remote.send_action(command['action'])
+            time.sleep(0.2)
         if 'key' in command:
             result = self.remote.send_keyboard_button(command['key'])
             time.sleep(0.1)
             self.remote.release_button()
         if 'macro' in command:
+            result = list()
             for macro in command['macro']:
-                result = self.command(command=macro)
+                result.append(self.command(command=macro))
         logging.info("%s %s" % (command, result))
         return result
 
