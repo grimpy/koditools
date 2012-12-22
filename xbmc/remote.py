@@ -43,8 +43,10 @@ class Remote(object):
                45: {'key': 'volume_down'}, #-
                47: {'macro': [{'action': 'ActivateWindow(home)'},
                               {'key': 'up'},
-                              {'key': 'enter'}]}, #/
+                              {'key': 'enter'},
+                              {'text': 'Search: '}]}, #/
                48: {'action': 'mute'}, #0
+               58: {'text': 'Enter text: '}, #:
                61: {'key': 'volume_up'}, #=
                97: {'action': 'FullScreen'},
                102: {'action': 'ActivateWindow(favourites)'}, #f
@@ -86,6 +88,12 @@ class Remote(object):
             result = list()
             for macro in command['macro']:
                 result.append(self.command(command=macro))
+        if 'text' in command:
+            print command['text'],
+            text = sys.stdin.readline()[:-1]
+            result = self.client.command('Input.SendText', text=text, done=True)
+
+
         logging.info("%s %s" % (command, result))
         return result
 
@@ -93,12 +101,6 @@ class Remote(object):
     def run(self):
         char = getch()
         while char not in (3,113): #control + c and q
-            if not self.command(char):
-                if char == 58: #this is a : we are gonna enter text now
-                    print 'Enter text: ',
-                    text = sys.stdin.readline()[:-1]
-                    self.client.command('Input.SendText', text=text, done=True)
-                else:
-                    logging.info(char)
-
+            self.command(char)
+            logging.info(char)
             char = getch()
