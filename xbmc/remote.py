@@ -42,13 +42,16 @@ class Remote(object):
                32: {'key': 'space'}, #space
                44: {'key': 'menu'}, #,
                45: {'key': 'volume_down'}, #-
-               47: {'macro': [{'action': 'ActivateWindow(home)'},
+               47: {'macro': [{'api': {'command': 'GUI.ActivateWindow', 'window': 'home'}},
                               {'key': 'up'},
                               {'key': 'enter'},
                               {'text': 'Search: '}]}, #/
                48: {'action': 'mute'}, #0
                58: {'text': 'Enter text: '}, #:
                61: {'key': 'volume_up'}, #=
+               63: {'macro': [{'api': {'command': 'Input.ExecuteAction', 'action':'filter'}},
+                              {'key': 'enter'},
+                              {'text': 'Filter: '}]}, #?
                97: {'action': 'FullScreen'},
                102: {'action': 'ActivateWindow(favourites)'}, #f
                104: {'action': 'ActivateWindow(home)'}, #f
@@ -86,6 +89,9 @@ class Remote(object):
             result = self.remote.send_keyboard_button(command['key'])
             time.sleep(0.1)
             self.remote.release_button()
+        if 'api' in command:
+            result = self.client.command(**command['api'])
+            time.sleep(0.2)
         if 'macro' in command:
             result = list()
             for macro in command['macro']:
