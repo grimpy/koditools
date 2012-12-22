@@ -4,6 +4,7 @@ import sys
 import termios
 import logging
 from .xbmcclient import XBMCClient
+from .restclient import JsonRPC
 import time
 
 def getch_():
@@ -40,13 +41,18 @@ class Remote(object):
                32: {'key': 'space'}, #space
                44: {'key': 'menu'}, #,
                45: {'key': 'volume_down'}, #-
+               47: {'macro': [{'action': 'ActivateWindow(home)'},
+                              {'key': 'up'},
+                              {'key': 'enter'}]}, #/
+               48: {'action': 'mute'}, #0
                61: {'key': 'volume_up'}, #=
+               97: {'action': 'FullScreen'},
                102: {'action': 'ActivateWindow(favourites)'}, #f
                104: {'action': 'ActivateWindow(home)'}, #f
                116: {'action': 'ActivateWindow(Videos, TvShowTitles)'}, #t
                118: {'action': 'ActivateWindow(Videos, MovieTitles)'}, #v
                105: {'key': 'i'}, #i
-               109: {'action': 'mute'}, #m
+               109: {'action': 'ActivateWindow(Videos, MovieTitles)'}, #m
                111: {'action': 'OSD'}, #o
                115: {'action': 'ActivateWindow(shutdownmenu)'}, #s
                120: {'key': 'Stop' }, #x
@@ -56,19 +62,28 @@ class Remote(object):
                503: {'key': 'down'}, #Down
               }
     def __init__(self, host):
-        self.client = XBMCClient('PyRemote', ip=host)
-        self.client.connect()
+        self.remote = XBMCClient('PyRemote', ip=host)
+        self.client = JsonRPC("http://%s:8080/jsonrpc" %host)
+        self.remote.connect()
 
-    def command(self, code):
-        command = Remote.MAPPING.get(code)
+
+    def getCommand(self, code):
+        return Remote.MAPPING.get(code)
+
+    def command(self, code=None, command=None):
+        if code and not command:
+            command = self.getCommand(code)
         if not command:
             return False
         if 'action' in command:
-            result = self.client.send_action(command['action'])
+            result = self.remote.send_action(command['action'])
         if 'key' in command:
-            result = self.client.send_keyboard_button(command['key'])
+            result = self.remote.send_keyboard_button(command['key'])
             time.sleep(0.1)
-            self.client.release_button()
+            self.remote.release_button()
+        if 'macro' in command:
+            for macro in command['macro']:
+                result = self.command(command=macro)
         logging.info("%s %s" % (command, result))
         return result
 
@@ -79,10 +94,8 @@ class Remote(object):
             if not self.command(char):
                 if char == 58: #this is a : we are gonna enter text now
                     print 'Enter text: ',
-                    text = sys.stdin.readline()
-                    kwargs = {'command': 'Input.SendText', 'text': text, 'done': True}
-                    result = self.client.command(**kwargs)
-                    logging.info('%s %s' % (kwargs, result))
+                    text = sys.stdin.readline()[:-1]
+                    self.client.command('Input.SendText', text=text, done=True)
                 else:
                     logging.info(char)
 
