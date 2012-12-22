@@ -3,6 +3,7 @@ import tty
 import sys
 import termios
 import logging
+import socket
 from .xbmcclient import XBMCClient
 from .restclient import JsonRPC
 import time
@@ -64,7 +65,8 @@ class Remote(object):
                503: {'key': 'down'}, #Down
               }
     def __init__(self, host):
-        self.remote = XBMCClient('PyRemote', ip=host)
+        hostname = socket.gethostname()
+        self.remote = XBMCClient('PyRemote: %s' % hostname, ip=host)
         self.client = JsonRPC("http://%s:8080/jsonrpc" %host)
         self.remote.connect()
 
