@@ -1,44 +1,14 @@
 #!/usr/bin/env python2
-import tty
-import sys
-import termios
+import curses
 import logging
 import socket
 from .xbmcclient import XBMCClient
 from .restclient import JsonRPC
 import time
 
-def getch_():
-    fd = sys.stdin.fileno()
-    old_settings = termios.tcgetattr(fd)
-    try:
-        tty.setraw(fd)
-        ch = sys.stdin.read(1)
-    finally:
-        termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
-    return ch
-
-ESCAPEMAPPING = {68: 500, #left
-                 65: 501, #up,
-                 67: 502, #right
-                 66: 503, #down
-                }
-
-def getch():
-    logging.debug('Getting key')
-    char = ord(getch_())
-    if char == 27:
-        getch_()
-        char = ord(getch_())
-        char = ESCAPEMAPPING.get(char, 0)
-    logging.debug('Retreived key %s' % char)
-    return char
-
-
-
 class Remote(object):
     MAPPING = {127: {'key': 'backspace'}, #backspace
-               13: {'key': 'enter'}, #Enter
+               10: {'key': 'enter'}, #Enter
                32: {'key': 'space'}, #space
                44: {'key': 'menu'}, #,
                45: {'key': 'volume_down'}, #-
@@ -60,19 +30,20 @@ class Remote(object):
                105: {'key': 'i'}, #i
                109: {'action': 'ActivateWindow(Videos, MovieTitles)'}, #m
                111: {'action': 'OSD'}, #o
+               114: {'action': 'reloadkeymaps'}, #r
                115: {'action': 'ActivateWindow(shutdownmenu)'}, #s
                120: {'key': 'Stop' }, #x
-               500: {'key': 'left'}, #left
-               501: {'key': 'up'}, #up
-               502: {'key': 'right'}, #right
-               503: {'key': 'down'}, #Down
+               curses.KEY_LEFT: {'key': 'left'}, #left
+               curses.KEY_UP: {'key': 'up'}, #up
+               curses.KEY_RIGHT: {'key': 'right'}, #right
+               curses.KEY_DOWN: {'key': 'down'}, #Down
               }
+
     def __init__(self, host):
         hostname = socket.gethostname()
         self.remote = XBMCClient('PyRemote: %s' % hostname, ip=host)
         self.client = JsonRPC("http://%s:8080/jsonrpc" %host)
         self.remote.connect()
-
 
     def getCommand(self, code):
         return Remote.MAPPING.get(code)
@@ -97,8 +68,10 @@ class Remote(object):
             for macro in command['macro']:
                 result.append(self.command(command=macro))
         if 'text' in command:
-            print command['text'],
-            text = sys.stdin.readline()[:-1]
+            self.scr.addnstr(command['text'], len(command['text']))
+            curses.echo()
+            text = self.scr.getstr()
+            curses.noecho()
             result = self.client.command('Input.SendText', text=text, done=True)
 
 
@@ -106,9 +79,10 @@ class Remote(object):
         return result
 
 
-    def run(self):
-        char = getch()
+    def run(self, scr):
+        self.scr = scr
+        char = self.scr.getch()
         while char not in (3,113): #control + c and q
             self.command(char)
             logging.info(char)
-            char = getch()
+            char = self.scr.getch()
