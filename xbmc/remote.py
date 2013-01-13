@@ -14,7 +14,7 @@ class Remote(object):
                               {'key': 'enter'},
                               {'text': 'Search: '}]}, #/
                58: {'text': 'Enter text: '}, #:
-               63: {'macro': [{'api': {'command': 'Input.ExecuteAction', 'action':'filter'}
+               63: {'macro': [{'api': {'command': 'Input.ExecuteAction', 'action':'filter'}},
                               {'key': 'enter'},
                               {'text': 'Filter: '}]}, #?
                curses.KEY_PPAGE: {'key': 'page_down'},
