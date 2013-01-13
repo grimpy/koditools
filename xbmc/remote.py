@@ -9,34 +9,20 @@ import time
 class Remote(object):
     MAPPING = {127: {'key': 'backspace'}, #backspace
                10: {'key': 'enter'}, #Enter
-               32: {'key': 'space'}, #space
-               44: {'key': 'menu'}, #,
-               45: {'key': 'volume_down'}, #-
                47: {'macro': [{'api': {'command': 'GUI.ActivateWindow', 'window': 'home'}},
                               {'key': 'up'},
                               {'key': 'enter'},
                               {'text': 'Search: '}]}, #/
-               48: {'action': 'mute'}, #0
                58: {'text': 'Enter text: '}, #:
-               61: {'key': 'volume_up'}, #=
-               63: {'macro': [{'api': {'command': 'Input.ExecuteAction', 'action':'filter'}},
+               63: {'macro': [{'api': {'command': 'Input.ExecuteAction', 'action':'filter'}
                               {'key': 'enter'},
                               {'text': 'Filter: '}]}, #?
-               97: {'action': 'FullScreen'},
-               102: {'action': 'ActivateWindow(favourites)'}, #f
-               104: {'action': 'ActivateWindow(home)'}, #f
-               116: {'action': 'ActivateWindow(Videos, TvShowTitles)'}, #t
-               118: {'action': 'ActivateWindow(Videos, MovieTitles)'}, #v
-               105: {'key': 'i'}, #i
-               109: {'action': 'ActivateWindow(Videos, MovieTitles)'}, #m
-               111: {'action': 'OSD'}, #o
-               114: {'action': 'reloadkeymaps'}, #r
-               115: {'action': 'ActivateWindow(shutdownmenu)'}, #s
-               120: {'key': 'Stop' }, #x
-               curses.KEY_LEFT: {'key': 'left'}, #left
-               curses.KEY_UP: {'key': 'up'}, #up
-               curses.KEY_RIGHT: {'key': 'right'}, #right
-               curses.KEY_DOWN: {'key': 'down'}, #Down
+               curses.KEY_PPAGE: {'key': 'page_down'},
+               curses.KEY_NPAGE: {'key': 'page_up'},
+               curses.KEY_LEFT: {'key': 'left'},
+               curses.KEY_UP: {'key': 'up'},
+               curses.KEY_RIGHT: {'key': 'right'},
+               curses.KEY_DOWN: {'key': 'down'},
               }
 
     def __init__(self, host):
@@ -46,7 +32,10 @@ class Remote(object):
         self.remote.connect()
 
     def getCommand(self, code):
-        return Remote.MAPPING.get(code)
+        action = Remote.MAPPING.get(code)
+        if not action:
+            action = {'key': chr(code) }
+        return action
 
     def command(self, code=None, command=None):
         if code and not command:
