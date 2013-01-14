@@ -17,11 +17,10 @@ The config file should have a section called keybindings.
 The key represents the key you want to bind (either numeric acsii value or the character itself or KEY_CHARACTER (can be used for numbers)).
 The value should be a json string containing the action that should be performmed
 
-`
-[keybindings]
-f = {"action": "ActivateWindow(favourite)"} # map f key to open favourites
-v = {"key": "m"} # remap key v to m
-`
+
+> [keybindings]
+> f = {"action": "ActivateWindow(favourite)"} # map f key to open favourites
+> v = {"key": "m"} # remap key v to m
 
 ## xbmcpidgin
 
