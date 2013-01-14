@@ -2,6 +2,9 @@
 import curses
 import logging
 import socket
+import json
+import ConfigParser
+import os
 from .xbmcclient import XBMCClient
 from .restclient import JsonRPC
 import time
@@ -30,9 +33,33 @@ class Remote(object):
         self.remote = XBMCClient('PyRemote: %s' % hostname, ip=host)
         self.client = JsonRPC("http://%s:8080/jsonrpc" %host)
         self.remote.connect()
+        self.readConfig()
+
+    def readConfig(self):
+        cfgpath = os.environ.get('XDG_CONFIG_HOME', os.path.join(os.environ['HOME'], '.config'))
+        cfgpath = os.path.join(cfgpath, 'xbmctools')
+        if not os.path.exists(cfgpath):
+            os.makedirs(cfgpath, 0755)
+        cfgpath = os.path.join(cfgpath, 'remote.conf')
+        cfg = ConfigParser.ConfigParser()
+        cfg.read(cfgpath)
+        mapping = dict()
+        if cfg.has_section('keybindings'):
+            for option in cfg.options('keybindings'):
+                if option.isdigit():
+                    key = int(option)
+                elif option.startswith('KEY_'):
+                    key = getattr(curses, option)
+                    if not key:
+                        key = ord(option)
+                else:
+                    key = ord(option)
+                mapping[key] = json.loads(cfg.get('keybindings', option))
+        self.MAPPING.update(mapping)
+
 
     def getCommand(self, code):
-        action = Remote.MAPPING.get(code)
+        action = self.MAPPING.get(code)
         if not action:
             action = {'key': chr(code) }
         return action
@@ -43,7 +70,7 @@ class Remote(object):
         if not command:
             return False
         if 'action' in command:
-            result = self.remote.send_action(command['action'])
+            result = self.remote.send_action(str(command['action']))
             time.sleep(0.2)
         if 'key' in command:
             result = self.remote.send_keyboard_button(command['key'])
