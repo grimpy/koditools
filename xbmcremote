@@ -7,7 +7,7 @@ from xbmc.remote import Remote
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Process some integers.')
     parser.add_argument('--host', dest='host', action='store', required=True)
-    parser.add_argument('-t', dest='toggle', action='store_const', const=32)
+    parser.add_argument('-t', dest='toggle', action='store_const', const=112)
     parser.add_argument('-c', '--client', dest='client', action='store_true', default=False)
     parser.add_argument('-v', '--verbose', dest='verbose', action='store_true', default=False)
     args = parser.parse_args()
