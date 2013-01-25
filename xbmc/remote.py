@@ -35,6 +35,17 @@ class Remote(object):
         self.remote.connect()
         self.readConfig()
 
+    def getKeyCode(self, option):
+        if option.isdigit() or isinstance(option, int):
+            key = int(option)
+        elif option.startswith('KEY_'):
+            key = getattr(curses, option)
+            if not key:
+                key = ord(option)
+        else:
+            key = ord(option)
+        return key
+
     def readConfig(self):
         cfgpath = os.environ.get('XDG_CONFIG_HOME', os.path.join(os.environ['HOME'], '.config'))
         cfgpath = os.path.join(cfgpath, 'xbmctools')
@@ -46,19 +57,13 @@ class Remote(object):
         mapping = dict()
         if cfg.has_section('keybindings'):
             for option in cfg.options('keybindings'):
-                if option.isdigit():
-                    key = int(option)
-                elif option.startswith('KEY_'):
-                    key = getattr(curses, option)
-                    if not key:
-                        key = ord(option)
-                else:
-                    key = ord(option)
+                key = self.getKeyCode(option)
                 mapping[key] = json.loads(cfg.get('keybindings', option))
         self.MAPPING.update(mapping)
 
 
     def getCommand(self, code):
+        code = self.getKeyCode(code)
         action = self.MAPPING.get(code)
         if not action:
             action = {'key': chr(code) }
