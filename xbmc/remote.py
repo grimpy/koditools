@@ -36,7 +36,7 @@ class Remote(object):
         self.readConfig()
 
     def getKeyCode(self, option):
-        if option.isdigit() or isinstance(option, int):
+        if isinstance(option, int) or option.isdigit():
             key = int(option)
         elif option.startswith('KEY_'):
             key = getattr(curses, option)
