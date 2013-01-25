@@ -20,6 +20,7 @@ class Remote(object):
                63: {'macro': [{'api': {'command': 'Input.ExecuteAction', 'action':'filter'}},
                               {'key': 'enter'},
                               {'text': 'Filter: '}]}, #?
+               curses.KEY_BACKSPACE: {'key': 'backspace'},
                curses.KEY_PPAGE: {'key': 'page_down'},
                curses.KEY_NPAGE: {'key': 'page_up'},
                curses.KEY_LEFT: {'key': 'left'},
