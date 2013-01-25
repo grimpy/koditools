@@ -39,8 +39,12 @@ class Remote(object):
         if isinstance(option, int) or option.isdigit():
             key = int(option)
         elif option.startswith('KEY_'):
+            if len(option) > 1:
+                option = option.upper()
             key = getattr(curses, option, None)
             if not key:
+                if len(option) > 5:
+                    raise ValueError("Invalid characeter %s" % option)
                 key = ord(option[4:])
         else:
             key = ord(option)
@@ -66,6 +70,7 @@ class Remote(object):
         code = self.getKeyCode(code)
         action = self.MAPPING.get(code)
         if not action:
+
             action = {'key': chr(code) }
         return action
 
