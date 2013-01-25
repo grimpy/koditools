@@ -39,9 +39,9 @@ class Remote(object):
         if isinstance(option, int) or option.isdigit():
             key = int(option)
         elif option.startswith('KEY_'):
-            key = getattr(curses, option)
+            key = getattr(curses, option, None)
             if not key:
-                key = ord(option)
+                key = ord(option[4:])
         else:
             key = ord(option)
         return key
