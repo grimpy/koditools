@@ -14,6 +14,7 @@ class Remote(object):
                10: {'key': 'enter'}, #Enter
                27: {'key': 'escape'}, #Escape
                32: {'key': 'space'}, #Space
+               92: {'key': 'backslash'}, #Backslash
                47: {'macro': [{'api': {'command': 'GUI.ActivateWindow', 'window': 'home'}},
                               {'key': 'up'},
                               {'key': 'enter'},
