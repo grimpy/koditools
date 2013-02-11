@@ -12,6 +12,7 @@ import time
 class Remote(object):
     MAPPING = {127: {'key': 'backspace'}, #backspace
                10: {'key': 'enter'}, #Enter
+               32: {'key': 'space'}, #Space
                47: {'macro': [{'api': {'command': 'GUI.ActivateWindow', 'window': 'home'}},
                               {'key': 'up'},
                               {'key': 'enter'},
