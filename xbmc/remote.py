@@ -9,6 +9,14 @@ from .xbmcclient import XBMCClient
 from .restclient import JsonRPC
 import time
 
+cursestoxbmcmap = {'KEY_PPAGE': 'pageup',
+                   'KEY_NPAGE': 'pagedown' }
+
+def getXBMCKey(curseskey):
+    return cursestoxbmcmap.get(curseskey, curseskey[4:].lower())
+
+curseskeymap = { getattr(curses, x): getXBMCKey(x) for x in dir(curses) if x.startswith('KEY_') }
+
 class Remote(object):
     MAPPING = {127: {'key': 'backspace'}, #backspace
                10: {'key': 'enter'}, #Enter
@@ -23,13 +31,6 @@ class Remote(object):
                63: {'macro': [{'api': {'command': 'Input.ExecuteAction', 'action':'filter'}},
                               {'key': 'enter'},
                               {'text': 'Filter: '}]}, #?
-               curses.KEY_BACKSPACE: {'key': 'backspace'},
-               curses.KEY_PPAGE: {'key': 'page_down'},
-               curses.KEY_NPAGE: {'key': 'page_up'},
-               curses.KEY_LEFT: {'key': 'left'},
-               curses.KEY_UP: {'key': 'up'},
-               curses.KEY_RIGHT: {'key': 'right'},
-               curses.KEY_DOWN: {'key': 'down'},
               }
 
     def __init__(self, host):
@@ -74,8 +75,11 @@ class Remote(object):
         code = self.getKeyCode(code)
         action = self.MAPPING.get(code)
         if not action:
-
-            action = {'key': chr(code) }
+            if code > 255:
+                key = curseskeymap[code]
+            else:
+                key = chr(code)
+            action = {'key': key }
         return action
 
     def command(self, code=None, command=None):
