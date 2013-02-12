@@ -7,6 +7,6 @@ setup(name='xbmctools',
       author='Jo De Boeck',
       author_email='deboeck.jo@gmail.com',
       url='http://github.com/grimpy/xbmctools',
-      packages=['xbmc'] ,
+      packages=['xbmctools'] ,
       scripts=['xbmcremote', 'xbmcpidgin'],
      )

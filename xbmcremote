@@ -2,7 +2,7 @@
 import argparse
 import logging
 import curses
-from xbmc.remote import Remote
+from xbmctools.remote import Remote
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Process some integers.')
