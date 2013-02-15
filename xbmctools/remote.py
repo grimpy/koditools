@@ -23,6 +23,8 @@ class Remote(object):
                27: {'key': 'escape'}, #Escape
                9: {'key': 'tab'}, #tab
                32: {'key': 'space'}, #Space
+               45: {'key': 'minus'}, #Minus
+               61: {'key': 'equals'}, #Equals
                92: {'key': 'backslash'}, #Backslash
                47: {'macro': [{'api': {'command': 'GUI.ActivateWindow', 'window': 'home'}},
                               {'key': 'up'},
