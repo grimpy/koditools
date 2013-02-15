@@ -21,6 +21,7 @@ class Remote(object):
     MAPPING = {127: {'key': 'backspace'}, #backspace
                10: {'key': 'enter'}, #Enter
                27: {'key': 'escape'}, #Escape
+               9: {'key': 'tab'}, #tab
                32: {'key': 'space'}, #Space
                92: {'key': 'backslash'}, #Backslash
                47: {'macro': [{'api': {'command': 'GUI.ActivateWindow', 'window': 'home'}},
