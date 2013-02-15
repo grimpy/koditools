@@ -11,7 +11,7 @@ Exceptions are the arrows keys which will be used for navigation.
 ### Config ~/.config/xbmctools/remote.conf
 
 Used to configure shortcuts to actions http://wiki.xbmc.org/index.php?title=Action_IDs
-Or remap keys to others or configure macros
+Or remap keys to others or configure macros http://wiki.xbmc.org/index.php?title=Keymap
 
 The config file should have a section called keybindings.
 The key represents the key you want to bind (either numeric acsii value or the character itself or KEY_CHARACTER (can be used for numbers)).
