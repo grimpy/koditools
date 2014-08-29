@@ -26,9 +26,8 @@ class Remote(object):
                45: {'key': 'minus'}, #Minus
                61: {'key': 'equals'}, #Equals
                92: {'key': 'backslash'}, #Backslash
-               47: {'macro': [{'api': {'command': 'GUI.ActivateWindow', 'window': 'home'}},
-                              {'key': 'up'},
-                              {'key': 'enter'},
+               #47: {'macro': [{'api': {'command': 'GUI.ActivateWindow', 'window': 'home'}},
+               47: {'macro': [{'action': "XBMC.RunScript(script.globalsearch,movies=true&amp;tvhows=true)"},
                               {'text': 'Search: '}]}, #/
                58: {'text': 'Enter text: '}, #:
                63: {'macro': [{'api': {'command': 'Input.ExecuteAction', 'action':'filter'}},
@@ -119,7 +118,7 @@ class Remote(object):
     def run(self, scr):
         self.scr = scr
         char = self.scr.getch()
-        while char not in (3,113): #control + c and q
+        while char not in (3,): #control + c and q
             self.command(char)
             logging.info(char)
             char = self.scr.getch()
