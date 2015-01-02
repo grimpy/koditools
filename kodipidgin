@@ -1,5 +1,5 @@
 #!/usr/bin/env python2
-from xbmctools.pidgin import Forwarder
+from koditools.pidgin import Forwarder
 import argparse
 import logging
 
@@ -8,7 +8,7 @@ if __name__ == '__main__':
     parser.add_argument('--host', dest='host', action='store', required=True)
     parser.add_argument('-v', '--verbose', dest='verbose', action='store_true', default=False)
     args = parser.parse_args()
-    logging.root.name = 'xbmcpidgin'
+    logging.root.name = 'kodipidgin'
     if args.verbose:
         logging.basicConfig(level=logging.DEBUG)
     f = Forwarder(args.host)

@@ -5,17 +5,17 @@ import socket
 import json
 import ConfigParser
 import os
-from .xbmcclient import XBMCClient
+from .kodiclient import KodiClient
 from .restclient import JsonRPC
 import time
 
-cursestoxbmcmap = {'KEY_PPAGE': 'pageup',
+cursestokodimap = {'KEY_PPAGE': 'pageup',
                    'KEY_NPAGE': 'pagedown' }
 
-def getXBMCKey(curseskey):
-    return cursestoxbmcmap.get(curseskey, curseskey[4:].lower())
+def getKodiKey(curseskey):
+    return cursestokodimap.get(curseskey, curseskey[4:].lower())
 
-curseskeymap = { getattr(curses, x): getXBMCKey(x) for x in dir(curses) if x.startswith('KEY_') }
+curseskeymap = { getattr(curses, x): getKodiKey(x) for x in dir(curses) if x.startswith('KEY_') }
 
 class Remote(object):
     MAPPING = {127: {'key': 'backspace'}, #backspace
@@ -27,7 +27,7 @@ class Remote(object):
                61: {'key': 'equals'}, #Equals
                92: {'key': 'backslash'}, #Backslash
                #47: {'macro': [{'api': {'command': 'GUI.ActivateWindow', 'window': 'home'}},
-               47: {'macro': [{'action': "XBMC.RunScript(script.globalsearch,movies=true&amp;tvhows=true)"},
+               47: {'macro': [{'action': "Kodi.RunScript(script.globalsearch,movies=true&amp;tvhows=true)"},
                               {'text': 'Search: '}]}, #/
                58: {'text': 'Enter text: '}, #:
                63: {'macro': [{'api': {'command': 'Input.ExecuteAction', 'action':'filter'}},
@@ -37,7 +37,7 @@ class Remote(object):
 
     def __init__(self, host):
         hostname = socket.gethostname()
-        self.remote = XBMCClient('PyRemote: %s' % hostname, ip=host)
+        self.remote = KodiClient('PyRemote: %s' % hostname, ip=host)
         self.client = JsonRPC("http://%s:8080/jsonrpc" %host)
         self.remote.connect()
         self.readConfig()
@@ -59,7 +59,7 @@ class Remote(object):
 
     def readConfig(self):
         cfgpath = os.environ.get('XDG_CONFIG_HOME', os.path.join(os.environ['HOME'], '.config'))
-        cfgpath = os.path.join(cfgpath, 'xbmctools')
+        cfgpath = os.path.join(cfgpath, 'koditools')
         if not os.path.exists(cfgpath):
             os.makedirs(cfgpath, 0755)
         cfgpath = os.path.join(cfgpath, 'remote.conf')
