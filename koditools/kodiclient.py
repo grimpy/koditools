@@ -127,7 +127,7 @@ class Packet:
      - H7 must be set to zeros for now
 
          -----------------------------
-         | -H1 Signature ("Kodi")    | - 4  x CHAR                4B
+         | -H1 Signature ("XBMC")    | - 4  x CHAR                4B
          | -H2 Version (eg. 2.0)     | - 2  x UNSIGNED CHAR       2B
          | -H3 PacketType            | - 1  x UNSIGNED SHORT      2B
          | -H4 Sequence number       | - 1  x UNSIGNED LONG       4B
@@ -139,7 +139,7 @@ class Packet:
          -----------------------------
     """
     def __init__(self):
-        self.sig = "Kodi"
+        self.sig = "XBMC"
         self.minver = 0
         self.majver = 2
         self.seq = 1
