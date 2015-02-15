@@ -29,7 +29,7 @@ class Remote(object):
                44: {'key': 'comma'}, #Comma
                46: {'key': 'period'}, #Period
                #47: {'macro': [{'api': {'command': 'GUI.ActivateWindow', 'window': 'home'}},
-               47: {'macro': [{'action': "Kodi.RunScript(script.globalsearch,movies=true&amp;tvhows=true)"},
+               47: {'macro': [{'action': "RunScript(script.globalsearch,movies=true&amp;tvhows=true)"},
                               {'text': 'Search: '}]}, #/
                58: {'text': 'Enter text: '}, #:
                63: {'macro': [{'api': {'command': 'Input.ExecuteAction', 'action':'filter'}},
