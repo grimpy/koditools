@@ -5,6 +5,7 @@ import socket
 import json
 import ConfigParser
 import os
+import sys
 from .kodiclient import KodiClient
 from .restclient import JsonRPC
 import time
@@ -129,8 +130,11 @@ class Remote(object):
 
     def run(self, scr):
         self.scr = scr
-        char = self.scr.getch()
-        while char not in (3,): #control + c and q
-            self.command(char)
-            logging.info(char)
+        try:
             char = self.scr.getch()
+            while char not in (3,): #control + c and q
+                self.command(char)
+                logging.info(char)
+                char = self.scr.getch()
+        except KeyboardInterrupt:
+            sys.exit(0)
