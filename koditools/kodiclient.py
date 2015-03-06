@@ -47,7 +47,7 @@ import time
 MAX_PACKET_SIZE  = 1024
 HEADER_SIZE      = 32
 MAX_PAYLOAD_SIZE = MAX_PACKET_SIZE - HEADER_SIZE
-UNIQUE_IDENTIFICATION = (int)(time.time())
+UNIQUE_IDENTIFICATION = 0xfef7adca # Random generated for kodtool
 
 PT_HELO          = 0x01
 PT_BYE           = 0x02
