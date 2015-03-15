@@ -6,6 +6,7 @@ from formatter import AbstractFormatter, DumbWriter
 from cStringIO import StringIO
 from dbus.mainloop.glib import DBusGMainLoop
 from .kodiclient import KodiClient
+from . import utils
 
 def toText(val):
     if isinstance(val, unicode):
@@ -21,6 +22,11 @@ def html2text(html):
 
 class Forwarder(object):
     def __init__(self, host):
+        if not host:
+            cfg = utils.getConfigFile()
+            if not cfg.has_section('server') or not cfg.has_option('server', 'host'):
+                raise ValueError('Not host configured')
+            host = cfg.get('server', 'host')
         self._client = KodiClient('KodiPidgin', ip=host)
         self._client.connect()
         DBusGMainLoop(set_as_default=True)

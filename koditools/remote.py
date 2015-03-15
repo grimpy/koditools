@@ -3,10 +3,9 @@ import curses
 import logging
 import socket
 import json
-import ConfigParser
-import os
 import sys
 from .kodiclient import KodiClient
+from . import utils
 from .restclient import JsonRPC
 import time
 
@@ -65,13 +64,7 @@ class Remote(object):
         return key
 
     def readConfig(self):
-        cfgpath = os.environ.get('XDG_CONFIG_HOME', os.path.join(os.environ['HOME'], '.config'))
-        cfgpath = os.path.join(cfgpath, 'koditools')
-        if not os.path.exists(cfgpath):
-            os.makedirs(cfgpath, 0755)
-        cfgpath = os.path.join(cfgpath, 'remote.conf')
-        cfg = ConfigParser.ConfigParser()
-        cfg.read(cfgpath)
+        cfg = utils.getConfigFile()
         mapping = dict()
         if cfg.has_section('keybindings'):
             for option in cfg.options('keybindings'):
