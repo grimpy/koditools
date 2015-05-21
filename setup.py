@@ -8,5 +8,5 @@ setup(name='koditools',
       author_email='deboeck.jo@gmail.com',
       url='http://github.com/grimpy/koditools',
       packages=['koditools'] ,
-      scripts=['kodiremote', 'kodipidgin'],
+      scripts=['kodiremote', 'kodipidgin', 'kodisendto'],
      )
