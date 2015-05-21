@@ -19,6 +19,6 @@ class JsonRPC(object):
 
     def _post(self, data):
         req = urllib2.Request(self._url, data, self._headers)
-        strm = urllib2.urlopen(req, timeout=1)
+        strm = urllib2.urlopen(req)#, timeout=1)
         return strm.read()
 

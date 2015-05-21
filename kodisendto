@@ -1,0 +1,66 @@
+#!/usr/bin/env python2
+import argparse
+import logging
+import subprocess
+import koditools
+from koditools import utils
+import os
+import socket
+import fcntl
+import struct
+
+def get_ip_address(ifname):
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    return socket.inet_ntoa(fcntl.ioctl(
+        s.fileno(),
+        0x8915,  # SIOCGIFADDR
+        struct.pack('256s', ifname[:15])
+    )[20:24])
+
+def ispidalive(pidfile):
+    if os.path.exists(pidfile):
+        pid = open(pidfile).read().strip()
+        if pid.isdigit():
+            pid = int(pid)
+            try:
+                os.kill(pid, 0)
+                return True
+            except OSError:
+                return False
+    return False
+
+def launchnginx(interface, filepath):
+    nginxconfpath = '/tmp/koditoolsnginx.conf'
+    nginxpidfile = '/tmp/koditoolsnginx.pid'
+    templatepath = os.path.join(os.path.dirname(koditools.__file__), 'templates', 'nginx.conf')
+    with open(templatepath) as fd:
+        nginxconf = fd.read()
+    filename = os.path.basename(filepath)
+    dirname = os.path.dirname(filepath)
+    nginxconf = nginxconf.format(filename=filename, dirpath=dirname)
+    with open(nginxconfpath, 'w') as fd:
+        fd.write(nginxconf)
+    if ispidalive(nginxpidfile):
+        subprocess.Popen(['nginx', '-c', nginxconfpath, '-s', 'reload'])
+    else:
+        subprocess.Popen(['nginx', '-c', nginxconfpath])
+    ip = get_ip_address(interface)
+    return "http://%s:55656/stream/%s" % (ip, filename)
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser.add_argument('--host', dest='host', action='store', default=None)
+    parser.add_argument('-p', '--port', dest='port', type=int, default=None)
+    parser.add_argument('-f', '--file', dest='file', default=None)
+    parser.add_argument('-v', '--verbose', dest='verbose', action='store_true', default=False)
+    args = parser.parse_args()
+    logging.root.name = 'kodiremote'
+    if args.verbose:
+        logging.basicConfig(level=logging.DEBUG)
+    cfg = utils.getConfigFile()
+    host, port = utils.getHostPort(cfg, args.host, args.port)
+    client = utils.getJSONRC(host, port)
+    interface = cfg.get('client', 'interface')
+
+    httpurl = launchnginx(interface, args.file)
+    print client.command('Player.Open', item={'file': httpurl})

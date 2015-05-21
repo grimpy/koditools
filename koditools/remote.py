@@ -45,7 +45,7 @@ class Remote(object):
         if self.host is None:
             raise ValueError("Host can not be none, please set in configuration or pass")
         self.remote = KodiClient('PyRemote: %s' % hostname, ip=self.host)
-        self.client = JsonRPC("http://%s:%s/jsonrpc" % (self.host, self.port))
+        self.client = utils.getJSONRC(self.host, self.port)
         self.remote.connect()
 
     def getKeyCode(self, option):
@@ -70,12 +70,7 @@ class Remote(object):
             for option in cfg.options('keybindings'):
                 key = self.getKeyCode(option)
                 mapping[key] = json.loads(cfg.get('keybindings', option))
-        if cfg.has_section('server'):
-            if cfg.has_option('server', 'host') and self.host is None:
-                self.host = cfg.get('server', 'host')
-            if cfg.has_option('server', 'port') and self.port is None:
-                self.port = cfg.get('server', 'port')
-
+        self.host, self.port = utils.getHostPort(cfg, self.host, self.port)
         self.MAPPING.update(mapping)
 
 

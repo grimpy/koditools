@@ -1,4 +1,5 @@
 import ConfigParser
+from koditools.restclient import JsonRPC
 import os
 
 def getConfigFile():
@@ -10,3 +11,14 @@ def getConfigFile():
     cfg = ConfigParser.ConfigParser()
     cfg.read(cfgpath)
     return cfg
+
+def getHostPort(cfg, host, port):
+    if cfg.has_section('server'):
+        if cfg.has_option('server', 'host') and host is None:
+            host = cfg.get('server', 'host')
+        if cfg.has_option('server', 'port') and port is None:
+            port = cfg.get('server', 'port')
+    return host, port
+
+def getJSONRC(host, port):
+    return JsonRPC("http://%s:%s/jsonrpc" % (host, port))
