@@ -8,7 +8,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Process some integers.')
     parser.add_argument('--host', dest='host', action='store')
     parser.add_argument('-p', '--port', dest='port', type=int, default=None)
-    parser.add_argument('-ep', '--event-port', dest='eport', type=int, default=None)
+    parser.add_argument('-e', '--event-port', dest='eport', type=int, default=None)
     parser.add_argument('-k', dest='key', action='store', help='Key to send')
     parser.add_argument('-c', '--client', dest='client', action='store_true', default=False)
     parser.add_argument('-v', '--verbose', dest='verbose', action='store_true', default=False)
