@@ -1,2 +1,2 @@
-#Version 0.1:
+#Version 1.1:
     * Add option to configure eventserver port
