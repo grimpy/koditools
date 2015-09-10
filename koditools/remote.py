@@ -37,14 +37,15 @@ class Remote(object):
                               {'text': 'Filter: '}]}, #?
               }
 
-    def __init__(self, host=None, port=None):
+    def __init__(self, host=None, port=None, eport=None):
         hostname = socket.gethostname()
         self.host = host
         self.port = port
+        self.eport = eport
         self.readConfig()
         if self.host is None:
             raise ValueError("Host can not be none, please set in configuration or pass")
-        self.remote = KodiClient('PyRemote: %s' % hostname, ip=self.host)
+        self.remote = KodiClient('PyRemote: %s' % hostname, ip=self.host, port=self.eport)
         self.client = utils.getJSONRC(self.host, self.port)
         self.remote.connect()
 
@@ -71,6 +72,7 @@ class Remote(object):
                 key = self.getKeyCode(option)
                 mapping[key] = json.loads(cfg.get('keybindings', option))
         self.host, self.port = utils.getHostPort(cfg, self.host, self.port)
+        self.eport = utils.getEventPort(cfg, self.eport)
         self.MAPPING.update(mapping)
 
 

@@ -20,5 +20,11 @@ def getHostPort(cfg, host, port):
             port = cfg.get('server', 'port')
     return host, port
 
+def getEventPort(cfg, port):
+    if cfg.has_section('server'):
+        if cfg.has_option('sever', 'event-port') and port is None:
+            port = cfg.get('server', 'event-port')
+    return port
+
 def getJSONRC(host, port):
     return JsonRPC("http://%s:%s/jsonrpc" % (host, port))

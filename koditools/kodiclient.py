@@ -466,7 +466,7 @@ class KodiClient:
     """An Kodi event client"""
 
     def __init__(self, name ="", icon_file=None, broadcast=False, uid=UNIQUE_IDENTIFICATION,
-                 ip="127.0.0.1"):
+                 ip="127.0.0.1", port=9777):
         """
         Keyword arguments:
         name -- Name of the client
@@ -477,7 +477,7 @@ class KodiClient:
         self.icon_file = icon_file
         self.icon_type = self._get_icon_type(icon_file)
         self.ip = ip
-        self.port = 9777
+        self.port = port
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         if broadcast:
             self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
