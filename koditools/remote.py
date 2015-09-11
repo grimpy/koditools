@@ -10,31 +10,36 @@ from .restclient import JsonRPC
 import time
 
 cursestokodimap = {'KEY_PPAGE': 'pageup',
-                   'KEY_NPAGE': 'pagedown' }
+                   'KEY_NPAGE': 'pagedown'}
+
 
 def getKodiKey(curseskey):
     return cursestokodimap.get(curseskey, curseskey[4:].lower())
 
-curseskeymap = { getattr(curses, x): getKodiKey(x) for x in dir(curses) if x.startswith('KEY_') }
+curseskeymap = {getattr(curses, x):
+                getKodiKey(x) for x in dir(curses) if x.startswith('KEY_')}
+
 
 class Remote(object):
-    MAPPING = {127: {'key': 'backspace'}, #Backspace
-               10: {'key': 'enter'}, #Enter
-               27: {'key': 'escape'}, #Escape
-               9: {'key': 'tab'}, #Tab
-               32: {'key': 'space'}, #Space
-               45: {'key': 'minus'}, #Minus
-               61: {'key': 'equals'}, #Equals
-               92: {'key': 'backslash'}, #Backslash
-               44: {'key': 'comma'}, #Comma
-               46: {'key': 'period'}, #Period
-               47: {'macro': [{'action': "RunScript(script.globalsearch,movies=true&amp;tvhows=true)"},
-                              {'text': 'Search: '}]}, #/
-               58: {'text': 'Enter text: '}, #:
-               63: {'macro': [{'api': {'command': 'Input.ExecuteAction', 'action':'filter'}},
+    MAPPING = {127: {'key': 'backspace'},  # Backspace
+               10: {'key': 'enter'},  # Enter
+               27: {'key': 'escape'},  # Escape
+               9: {'key': 'tab'},  # Tab
+               32: {'key': 'space'},  # Space
+               45: {'key': 'minus'},  # Minus
+               61: {'key': 'equals'},  # Equals
+               92: {'key': 'backslash'},  # Backslash
+               44: {'key': 'comma'},  # Comma
+               46: {'key': 'period'},  # Period
+               47: {'macro': [{'action': "RunScript(script.globalsearch," +
+                                         "movies=true&amp;tvhows=true)"},
+                              {'text': 'Search: '}]},  # /
+               58: {'text': 'Enter text: '},  # :
+               63: {'macro': [{'api': {'command': 'Input.ExecuteAction',
+                                       'action': 'filter'}},
                               {'key': 'enter'},
-                              {'text': 'Filter: '}]}, #?
-              }
+                              {'text': 'Filter: '}]},  # ?
+               }
 
     def __init__(self, host=None, port=None, eport=None):
         hostname = socket.gethostname()
@@ -43,8 +48,10 @@ class Remote(object):
         self.eport = eport
         self.readConfig()
         if self.host is None:
-            raise ValueError("Host can not be none, please set in configuration or pass")
-        self.remote = KodiClient('PyRemote: %s' % hostname, ip=self.host, port=self.eport)
+            raise ValueError("Host can not be none, " +
+                             "please set in configuration or pass")
+        self.remote = KodiClient('PyRemote: %s' % hostname, ip=self.host,
+                                 port=self.eport)
         self.client = utils.getJSONRC(self.host, self.port)
         self.remote.connect()
 
@@ -74,7 +81,6 @@ class Remote(object):
         self.eport = utils.getEventPort(cfg, self.eport)
         self.MAPPING.update(mapping)
 
-
     def getCommand(self, code):
         code = self.getKeyCode(code)
         action = self.MAPPING.get(code)
@@ -83,7 +89,7 @@ class Remote(object):
                 key = curseskeymap[code]
             else:
                 key = chr(code)
-            action = {'key': key }
+            action = {'key': key}
         return action
 
     def command(self, code=None, command=None):
@@ -110,18 +116,16 @@ class Remote(object):
             curses.echo()
             text = self.scr.getstr()
             curses.noecho()
-            result = self.client.command('Input.SendText', text=text, done=True)
-
-
+            result = self.client.command('Input.SendText', text=text,
+                                         done=True)
         logging.info("%s %s" % (command, result))
         return result
-
 
     def run(self, scr):
         self.scr = scr
         try:
             char = self.scr.getch()
-            while char not in (3,): #control + c and q
+            while char not in (3,):  # control + c and q
                 self.command(char)
                 logging.info(char)
                 char = self.scr.getch()
