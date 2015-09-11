@@ -47,7 +47,7 @@ import time
 MAX_PACKET_SIZE  = 1024
 HEADER_SIZE      = 32
 MAX_PAYLOAD_SIZE = MAX_PACKET_SIZE - HEADER_SIZE
-UNIQUE_IDENTIFICATION = 0xfef7adca # Random generated for kodtool
+UNIQUE_IDENTIFICATION = 0xfef7adca # Random generated for koditool
 
 PT_HELO          = 0x01
 PT_BYE           = 0x02
@@ -444,7 +444,7 @@ class PacketACTION (Packet):
     """An ACTION packet
 
     An ACTION packet tells Kodi to do the action specified, based on the type it knows were it needs to be sent.
-    The idea is that this will be as in scripting/skining and keymapping, just triggered from afar.
+    The idea is that this will be as in scripting/skinning and keymapping, just triggered from afar.
     """
     def __init__(self, actionmessage="", actiontype=ACTION_EXECBUILTIN):
         """
@@ -463,7 +463,7 @@ class PacketACTION (Packet):
 ######################################################################
 
 class KodiClient:
-    """An Kodi event client"""
+    """A Kodi event client"""
 
     def __init__(self, name ="", icon_file=None, broadcast=False, uid=UNIQUE_IDENTIFICATION,
                  ip="127.0.0.1", port=9777):
@@ -486,7 +486,7 @@ class KodiClient:
 
     def connect(self, ip=None, port=None):
         """Initialize connection to Kodi
-        ip -- IP Address of Kodi
+        ip -- IP address of Kodi
         port -- port that the event server on Kodi is listening on
         """
         if ip:

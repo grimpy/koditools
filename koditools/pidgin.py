@@ -25,7 +25,7 @@ class Forwarder(object):
         if not host:
             cfg = utils.getConfigFile()
             if not cfg.has_section('server') or not cfg.has_option('server', 'host'):
-                raise ValueError('Not host configured')
+                raise ValueError('Host not configured')
             host = cfg.get('server', 'host')
         self._client = KodiClient('KodiPidgin', ip=host)
         self._client.connect()

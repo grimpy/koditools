@@ -18,10 +18,10 @@ def getKodiKey(curseskey):
 curseskeymap = { getattr(curses, x): getKodiKey(x) for x in dir(curses) if x.startswith('KEY_') }
 
 class Remote(object):
-    MAPPING = {127: {'key': 'backspace'}, #backspace
+    MAPPING = {127: {'key': 'backspace'}, #Backspace
                10: {'key': 'enter'}, #Enter
                27: {'key': 'escape'}, #Escape
-               9: {'key': 'tab'}, #tab
+               9: {'key': 'tab'}, #Tab
                32: {'key': 'space'}, #Space
                45: {'key': 'minus'}, #Minus
                61: {'key': 'equals'}, #Equals
