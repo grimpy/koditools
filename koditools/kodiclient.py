@@ -37,17 +37,17 @@ at least once every 60 seconds. To "ping" Kodi with an empty packet use
 PacketPING or KodiClient.ping(). See the documentation for details.
 """
 
-__author__  = "d4rk@kodi.tv"
-__version__ = "0.0.3"
-
 from struct import pack
 import socket
 import time
 
+__author__  = "d4rk@kodi.tv"
+__version__ = "0.0.3"
+
 MAX_PACKET_SIZE  = 1024
 HEADER_SIZE      = 32
 MAX_PAYLOAD_SIZE = MAX_PACKET_SIZE - HEADER_SIZE
-UNIQUE_IDENTIFICATION = 0xfef7adca # Random generated for kodtool
+UNIQUE_IDENTIFICATION = 0xfef7adca  # Random generated for koditool
 
 PT_HELO          = 0x01
 PT_BYE           = 0x02
@@ -94,26 +94,29 @@ ACTION_BUTTON      = 0x02
 # Helper Functions
 ######################################################################
 
+
 def format_string(msg):
     """ """
     return msg + "\0"
 
+
 def format_uint32(num):
     """ """
-    return pack ("!I", num)
+    return pack("!I", num)
+
 
 def format_uint16(num):
     """ """
-    if num<0:
+    if num < 0:
         num = 0
-    elif num>65535:
+    elif num > 65535:
         num = 65535
-    return pack ("!H", num)
-
+    return pack("!H", num)
 
 ######################################################################
 #  Packet Classes
 ######################################################################
+
 
 class Packet:
     """Base class that implements a single event packet.
@@ -150,7 +153,6 @@ class Packet:
         self.payload = ""
         return
 
-
     def append_payload(self, blob):
         """Append to existing payload
 
@@ -158,7 +160,6 @@ class Packet:
         blob -- binary data to append to the current payload
         """
         self.set_payload(self.payload + blob)
-
 
     def set_payload(self, payload):
         """Set the payload for this packet
@@ -168,8 +169,8 @@ class Packet:
         """
         self.payload = payload
         self.payloadsize = len(self.payload)
-        self.maxseq = int((self.payloadsize + (MAX_PAYLOAD_SIZE - 1)) / MAX_PAYLOAD_SIZE)
-
+        self.maxseq = int((self.payloadsize + (MAX_PAYLOAD_SIZE - 1)) /
+                          MAX_PAYLOAD_SIZE)
 
     def num_packets(self):
         """ Return the number of packets required for payload """
@@ -215,7 +216,6 @@ class Packet:
 
         return self.payloadsize % MAX_PAYLOAD_SIZE
 
-
     def get_udp_message(self, packetnum=1):
         """Construct the UDP message for the specified packetnum and return
         as string
@@ -227,16 +227,16 @@ class Packet:
         if packetnum > self.num_packets() or packetnum < 1:
             return ""
         header = ""
-        if packetnum==1:
+        if packetnum == 1:
             header = self.get_header(self.packettype, packetnum, self.maxseq,
                                      self.get_payload_size(packetnum))
         else:
             header = self.get_header(PT_BLOB, packetnum, self.maxseq,
                                      self.get_payload_size(packetnum))
 
-        payload = self.payload[ (packetnum-1) * MAX_PAYLOAD_SIZE :
-                                (packetnum-1) * MAX_PAYLOAD_SIZE+
-                                self.get_payload_size(packetnum) ]
+        payload = self.payload[(packetnum - 1) * MAX_PAYLOAD_SIZE:
+                               (packetnum - 1) * MAX_PAYLOAD_SIZE +
+                               self.get_payload_size(packetnum)]
         return header + payload
 
     def send(self, sock, addr, uid=UNIQUE_IDENTIFICATION):
@@ -248,9 +248,9 @@ class Packet:
         uid  -- unique identification
         """
         self.uid = uid
-        for a in range ( 0, self.num_packets() ):
+        for a in range(0, self.num_packets()):
             try:
-                sock.sendto(self.get_udp_message(a+1), addr)
+                sock.sendto(self.get_udp_message(a + 1), addr)
             except:
                 return False
         return True
@@ -273,13 +273,14 @@ class PacketHELO (Packet):
         Packet.__init__(self)
         self.packettype = PT_HELO
         self.icontype = icon_type
-        self.set_payload ( format_string(devicename)[0:128] )
-        self.append_payload( chr (icon_type) )
-        self.append_payload( format_uint16 (0) ) # port no
-        self.append_payload( format_uint32 (0) ) # reserved1
-        self.append_payload( format_uint32 (0) ) # reserved2
+        self.set_payload(format_string(devicename)[0:128])
+        self.append_payload(chr(icon_type))
+        self.append_payload(format_uint16(0))  # port no
+        self.append_payload(format_uint32(0))  # reserved1
+        self.append_payload(format_uint32(0))  # reserved2
         if icon_type != ICON_NONE and icon_file:
-            self.append_payload( file(icon_file).read() )
+            self.append_payload(file(icon_file).read())
+
 
 class PacketNOTIFICATION (Packet):
     """A NOTIFICATION packet
@@ -300,12 +301,13 @@ class PacketNOTIFICATION (Packet):
         self.packettype = PT_NOTIFICATION
         self.title = title
         self.message = message
-        self.set_payload ( format_string(title) )
-        self.append_payload( format_string(message) )
-        self.append_payload( chr (icon_type) )
-        self.append_payload( format_uint32 (0) ) # reserved
+        self.set_payload(format_string(title))
+        self.append_payload(format_string(message))
+        self.append_payload(chr(icon_type))
+        self.append_payload(format_uint32(0))  # reserved
         if icon_type != ICON_NONE and icon_file:
-            self.append_payload( file(icon_file).read() )
+            self.append_payload(file(icon_file).read())
+
 
 class PacketBUTTON (Packet):
     """A BUTTON packet
@@ -334,8 +336,8 @@ class PacketBUTTON (Packet):
                     "R1" => xbox remote map ( <remote> section )
                     "R2" => xbox universal remote map ( <universalremote>
                             section )
-                    "LI:devicename" => LIRC remote map where 'devicename' is the
-                    actual device's name
+                    "LI:devicename" => LIRC remote map where 'devicename' is
+                    the actual device's name
         button_name -- a button name defined in the map specified in map_name.
                        For example, if map_name is "KB" refering to the
                        <keyboard> section in Keymap.xml then, valid
@@ -346,7 +348,7 @@ class PacketBUTTON (Packet):
         Packet.__init__(self)
         self.flags = 0
         self.packettype = PT_BUTTON
-        if type (code ) == str:
+        if type(code) == str:
             code = ord(code)
 
         # assign code only if we don't have a map and button name
@@ -355,7 +357,7 @@ class PacketBUTTON (Packet):
         else:
             self.flags |= BT_USE_NAME
             self.code = 0
-        if (amount != None):
+        if amount is not None:
             self.flags |= BT_USE_AMOUNT
             self.amount = int(amount)
         else:
@@ -374,11 +376,12 @@ class PacketBUTTON (Packet):
         elif axis == 2:
             self.flags |= BT_AXIS
 
-        self.set_payload ( format_uint16(self.code) )
-        self.append_payload( format_uint16(self.flags) )
-        self.append_payload( format_uint16(self.amount) )
-        self.append_payload( format_string (map_name) )
-        self.append_payload( format_string (button_name) )
+        self.set_payload(format_uint16(self.code))
+        self.append_payload(format_uint16(self.flags))
+        self.append_payload(format_uint16(self.amount))
+        self.append_payload(format_string(map_name))
+        self.append_payload(format_string(button_name))
+
 
 class PacketMOUSE (Packet):
     """A MOUSE packet
@@ -396,9 +399,10 @@ class PacketMOUSE (Packet):
         Packet.__init__(self)
         self.packettype = PT_MOUSE
         self.flags = MS_ABSOLUTE
-        self.append_payload( chr (self.flags) )
-        self.append_payload( format_uint16(x) )
-        self.append_payload( format_uint16(y) )
+        self.append_payload(chr(self.flags))
+        self.append_payload(format_uint16(x))
+        self.append_payload(format_uint16(y))
+
 
 class PacketBYE (Packet):
     """A BYE packet
@@ -421,10 +425,12 @@ class PacketPING (Packet):
         Packet.__init__(self)
         self.packettype = PT_PING
 
+
 class PacketLOG (Packet):
     """A LOG packet
 
-    A LOG packet tells Kodi to log the message to kodi.log with the loglevel as specified.
+    A LOG packet tells Kodi to log the message to kodi.log with the loglevel
+    as specified.
     """
     def __init__(self, loglevel=0, logmessage="", autoprint=True):
         """
@@ -435,16 +441,18 @@ class PacketLOG (Packet):
         """
         Packet.__init__(self)
         self.packettype = PT_LOG
-        self.append_payload( chr (loglevel) )
-        self.append_payload( format_string(logmessage) )
+        self.append_payload(chr(loglevel))
+        self.append_payload(format_string(logmessage))
         if (autoprint):
-          print logmessage
+            print logmessage
+
 
 class PacketACTION (Packet):
     """An ACTION packet
 
-    An ACTION packet tells Kodi to do the action specified, based on the type it knows were it needs to be sent.
-    The idea is that this will be as in scripting/skining and keymapping, just triggered from afar.
+    An ACTION packet tells Kodi to do the action specified, based on the type
+    it knows were it needs to be sent. The idea is that this will be as in
+    scripting/skinning and keymapping, just triggered from afar.
     """
     def __init__(self, actionmessage="", actiontype=ACTION_EXECBUILTIN):
         """
@@ -455,18 +463,19 @@ class PacketACTION (Packet):
         """
         Packet.__init__(self)
         self.packettype = PT_ACTION
-        self.append_payload( chr (actiontype) )
-        self.append_payload( format_string(actionmessage) )
+        self.append_payload(chr(actiontype))
+        self.append_payload(format_string(actionmessage))
 
 ######################################################################
 # Kodi Client Class
 ######################################################################
 
-class KodiClient:
-    """An Kodi event client"""
 
-    def __init__(self, name ="", icon_file=None, broadcast=False, uid=UNIQUE_IDENTIFICATION,
-                 ip="127.0.0.1", port=9777):
+class KodiClient:
+    """A Kodi event client"""
+
+    def __init__(self, name="", icon_file=None, broadcast=False,
+                 uid=UNIQUE_IDENTIFICATION, ip="127.0.0.1", port=9777):
         """
         Keyword arguments:
         name -- Name of the client
@@ -483,10 +492,9 @@ class KodiClient:
             self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
         self.uid = uid
 
-
     def connect(self, ip=None, port=None):
         """Initialize connection to Kodi
-        ip -- IP Address of Kodi
+        ip -- IP address of Kodi
         port -- port that the event server on Kodi is listening on
         """
         if ip:
@@ -497,18 +505,15 @@ class KodiClient:
         packet = PacketHELO(self.name, self.icon_type, self.icon_file)
         return packet.send(self.sock, self.addr, self.uid)
 
-
     def close(self):
         """Close the current connection"""
         packet = PacketBYE()
         return packet.send(self.sock, self.addr, self.uid)
 
-
     def ping(self):
         """Send a PING packet"""
         packet = PacketPING()
         return packet.send(self.sock, self.addr, self.uid)
-
 
     def send_notification(self, title="", message="", icon_file=None):
         """Send a notification to the connected Kodi
@@ -523,7 +528,6 @@ class KodiClient:
                                     icon_file)
         return packet.send(self.sock, self.addr, self.uid)
 
-
     def send_keyboard_button(self, button=None):
         """Send a keyboard event to Kodi
         Keyword Arguments:
@@ -533,22 +537,20 @@ class KodiClient:
             return
         return self.send_button(map="KB", button=button)
 
-
     def send_remote_button(self, button=None):
         """Send a remote control event to Kodi
         Keyword Arguments:
-        button -- name of the remote control button to send (same as in Keymap.xml)
+        button -- name of the remote control button to send (same as
+                  in Keymap.xml)
         """
         if not button:
             return
         return self.send_button(map="R1", button=button)
 
-
     def release_button(self):
         """Release all buttons"""
         packet = PacketBUTTON(code=0x01, down=0)
         return packet.send(self.sock, self.addr, self.uid)
-
 
     def send_button(self, map="", button="", amount=0):
         """Send a button event to Kodi
@@ -568,7 +570,8 @@ class KodiClient:
                   section in Keymap.xml then, valid buttons include
                   "printscreen", "minus", "x", etc.
         """
-        packet = PacketBUTTON(map_name=str(map), button_name=str(button), amount=amount)
+        packet = PacketBUTTON(map_name=str(map), button_name=str(button),
+                              amount=amount)
         return packet.send(self.sock, self.addr, self.uid)
 
     def send_button_state(self, map="", button="", amount=0, down=0, axis=0):
@@ -590,12 +593,13 @@ class KodiClient:
                   "printscreen", "minus", "x", etc.
         """
         if axis:
-          if amount == 0:
-            down = 0
-          else:
-            down = 1
+            if amount == 0:
+                down = 0
+            else:
+                down = 1
 
-        packet = PacketBUTTON(map_name=str(map), button_name=str(button), amount=amount, down=down, queue=1, axis=axis)
+        packet = PacketBUTTON(map_name=str(map), button_name=str(button),
+                              amount=amount, down=down, queue=1, axis=axis)
         return packet.send(self.sock, self.addr, self.uid)
 
     def send_mouse_position(self, x=0, y=0):

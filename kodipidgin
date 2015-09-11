@@ -6,11 +6,11 @@ import logging
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Process some integers.')
     parser.add_argument('--host', dest='host', action='store')
-    parser.add_argument('-v', '--verbose', dest='verbose', action='store_true', default=False)
+    parser.add_argument('-v', '--verbose', dest='verbose', action='store_true',
+                        default=False)
     args = parser.parse_args()
     logging.root.name = 'kodipidgin'
     if args.verbose:
         logging.basicConfig(level=logging.DEBUG)
     f = Forwarder(args.host)
     f.run()
-

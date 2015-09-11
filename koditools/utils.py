@@ -5,8 +5,10 @@ import os
 DEFAULT_HTTP_PORT = 8080
 DEFAULT_EVENTSERVER_PORT = 9777
 
+
 def getConfigFile():
-    cfgpath = os.environ.get('XDG_CONFIG_HOME', os.path.join(os.environ['HOME'], '.config'))
+    cfgpath = os.environ.get('XDG_CONFIG_HOME',
+                             os.path.join(os.environ['HOME'], '.config'))
     cfgpath = os.path.join(cfgpath, 'koditools')
     if not os.path.exists(cfgpath):
         os.makedirs(cfgpath, 0755)
@@ -14,6 +16,7 @@ def getConfigFile():
     cfg = ConfigParser.ConfigParser()
     cfg.read(cfgpath)
     return cfg
+
 
 def getHostPort(cfg, host, port):
     if cfg.has_section('server'):
@@ -25,6 +28,7 @@ def getHostPort(cfg, host, port):
         port = DEFAULT_HTTP_PORT
     return host, port
 
+
 def getEventPort(cfg, port):
     if cfg.has_section('server'):
         if cfg.has_option('server', 'event-port') and port is None:
@@ -32,6 +36,7 @@ def getEventPort(cfg, port):
     if not port:
         port = DEFAULT_EVENTSERVER_PORT
     return int(port)
+
 
 def getJSONRC(host, port):
     return JsonRPC("http://%s:%s/jsonrpc" % (host, port))

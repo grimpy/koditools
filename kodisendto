@@ -9,6 +9,7 @@ import socket
 import fcntl
 import struct
 
+
 def get_ip_address(ifname):
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     return socket.inet_ntoa(fcntl.ioctl(
@@ -16,6 +17,7 @@ def get_ip_address(ifname):
         0x8915,  # SIOCGIFADDR
         struct.pack('256s', ifname[:15])
     )[20:24])
+
 
 def ispidalive(pidfile):
     if os.path.exists(pidfile):
@@ -29,10 +31,12 @@ def ispidalive(pidfile):
                 return False
     return False
 
+
 def launchnginx(interface, filepath):
     nginxconfpath = '/tmp/koditoolsnginx.conf'
     nginxpidfile = '/tmp/koditoolsnginx.pid'
-    templatepath = os.path.join(os.path.dirname(koditools.__file__), 'templates', 'nginx.conf')
+    templatepath = os.path.join(os.path.dirname(koditools.__file__),
+                                'templates', 'nginx.conf')
     with open(templatepath) as fd:
         nginxconf = fd.read()
     filename = os.path.basename(filepath)
@@ -52,7 +56,8 @@ if __name__ == '__main__':
     parser.add_argument('--host', dest='host', action='store', default=None)
     parser.add_argument('-p', '--port', dest='port', type=int, default=None)
     parser.add_argument('-f', '--file', dest='file', default=None)
-    parser.add_argument('-v', '--verbose', dest='verbose', action='store_true', default=False)
+    parser.add_argument('-v', '--verbose', dest='verbose', action='store_true',
+                        default=False)
     args = parser.parse_args()
     logging.root.name = 'kodiremote'
     if args.verbose:
