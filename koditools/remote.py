@@ -28,7 +28,6 @@ class Remote(object):
                92: {'key': 'backslash'}, #Backslash
                44: {'key': 'comma'}, #Comma
                46: {'key': 'period'}, #Period
-               #47: {'macro': [{'api': {'command': 'GUI.ActivateWindow', 'window': 'home'}},
                47: {'macro': [{'action': "RunScript(script.globalsearch,movies=true&amp;tvhows=true)"},
                               {'text': 'Search: '}]}, #/
                58: {'text': 'Enter text: '}, #:
