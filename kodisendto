@@ -67,5 +67,5 @@ if __name__ == '__main__':
     client = utils.getJSONRC(host, port)
     interface = cfg.get('client', 'interface')
 
-    httpurl = launchnginx(interface, args.file)
+    httpurl = launchnginx(interface, os.path.realpath(args.file))
     print client.command('Player.Open', item={'file': httpurl})
