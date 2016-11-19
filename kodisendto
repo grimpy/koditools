@@ -52,12 +52,14 @@ def launchnginx(interface, filepath):
     return "http://%s:55656/stream/%s" % (ip, filename)
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser = argparse.ArgumentParser(description='Send media to Kodi. Server host and port can be defined in [server] group of $XDG_CONFIG_HOME/koditools/remote.conf')
     parser.add_argument('--host', dest='host', action='store', default=None)
     parser.add_argument('-p', '--port', dest='port', type=int, default=None)
-    parser.add_argument('-f', '--file', dest='file', default=None)
-    parser.add_argument('-v', '--verbose', dest='verbose', action='store_true',
-                        default=False)
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument('-f', '--file', dest='file', default=None)
+    group.add_argument('filename', nargs='?')
+    parser.add_argument('-i', '--iface', dest='interface', default=None, required=False)
+    parser.add_argument('-v', '--verbose', dest='verbose', action='store_true', default=False)
     args = parser.parse_args()
     logging.root.name = 'kodiremote'
     if args.verbose:
@@ -65,7 +67,7 @@ if __name__ == '__main__':
     cfg = utils.getConfigFile()
     host, port = utils.getHostPort(cfg, args.host, args.port)
     client = utils.getJSONRC(host, port)
-    interface = cfg.get('client', 'interface')
-
-    httpurl = launchnginx(interface, os.path.realpath(args.file))
+    interface = args.interface or cfg.get('client', 'interface')
+    filename = args.file or args.filename
+    httpurl = launchnginx(interface, os.path.realpath(filename))
     print client.command('Player.Open', item={'file': httpurl})
