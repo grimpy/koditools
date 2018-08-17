@@ -1,4 +1,7 @@
-import ConfigParser
+try:
+    import ConfigParser
+except ImportError:
+    import configparser as ConfigParser
 from koditools.restclient import JsonRPC
 import os
 
@@ -11,7 +14,7 @@ def getConfigFile():
                              os.path.join(os.environ['HOME'], '.config'))
     cfgpath = os.path.join(cfgpath, 'koditools')
     if not os.path.exists(cfgpath):
-        os.makedirs(cfgpath, 0755)
+        os.makedirs(cfgpath, 0o755)
     cfgpath = os.path.join(cfgpath, 'remote.conf')
     cfg = ConfigParser.ConfigParser()
     cfg.read(cfgpath)

@@ -6,8 +6,8 @@ import json
 import sys
 from .kodiclient import KodiClient
 from . import utils
-from .restclient import JsonRPC
 import time
+import subprocess
 
 cursestokodimap = {'KEY_PPAGE': 'pageup',
                    'KEY_NPAGE': 'pagedown'}
@@ -93,6 +93,7 @@ class Remote(object):
         return action
 
     def command(self, code=None, command=None):
+        result = ''
         if code and not command:
             command = self.getCommand(code)
         if not command:
@@ -118,6 +119,8 @@ class Remote(object):
             curses.noecho()
             result = self.client.command('Input.SendText', text=text,
                                          done=True)
+        if 'exec' in command:
+            subprocess.Popen(command['exec'].format(host=self.host, port=self.port, eport=self.eport), shell=True)
         logging.info("%s %s" % (command, result))
         return result
 

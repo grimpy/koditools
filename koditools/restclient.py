@@ -1,5 +1,9 @@
-#!/usr/bin/env python2
-import urllib2
+#!/usr/bin/env python
+try:
+    from urllib2 import Request, urlopen
+    str = unicode
+except ImportError:
+    from urllib.request import Request, urlopen
 import json
 import logging
 
@@ -15,12 +19,15 @@ class JsonRPC(object):
         message = {'jsonrpc': '2.0', 'method': command, 'id': 1,
                    'params': kwargs}
         logging.debug('Making command %s with args %s' % (command, kwargs))
-        result = self._post(json.dumps(message))
+        data = json.dumps(message)
+        if isinstance(data, str):
+            data = data.encode()
+        result = self._post(data)
         logging.debug('Result of command %s: %s' % (command, result))
 
         return result
 
     def _post(self, data):
-        req = urllib2.Request(self._url, data, self._headers)
-        strm = urllib2.urlopen(req)
+        req = Request(self._url, data, self._headers)
+        strm = urlopen(req)
         return strm.read()
