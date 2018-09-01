@@ -22,6 +22,10 @@ The value should be a json string containing the action that should be performme
 [keybindings]  
 f = {"action": "ActivateWindow(favourite)"} # map f key to open favourites  
 v = {"key": "m"} # remap key v to m  
+45 = {"tv": {"control": "media", "command": "volume_down"}}     
+61 = {"tv": {"control": "media", "command": "volume_up"}}       
+q = {"tv": {"control": "system", "command": "power_off"}}       
+s = {"tv": {"control": "source", "command": "set_source", "args": [{"id": "HDMI_1"}]}}
 
 [server]
 host = 192.168.1.3
