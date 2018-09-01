@@ -8,6 +8,7 @@ from .kodiclient import KodiClient
 from . import utils
 import time
 import subprocess
+import importlib
 
 cursestokodimap = {'KEY_PPAGE': 'pageup',
                    'KEY_NPAGE': 'pagedown'}
@@ -46,6 +47,7 @@ class Remote(object):
         self.host = host
         self.port = port
         self.eport = eport
+        self.plugins = {}
         self.readConfig()
         if self.host is None:
             raise ValueError("Host can not be none, " +
@@ -80,6 +82,15 @@ class Remote(object):
         self.host, self.port = utils.getHostPort(cfg, self.host, self.port)
         self.eport = utils.getEventPort(cfg, self.eport)
         self.MAPPING.update(mapping)
+        for section in cfg.sections():
+            if section.startswith('plugin.'):
+                pluginname = section.split('.', 1)[1]
+                classparts = cfg.get(section, 'class').split('.')
+                classname = classparts[-1]
+                modulename = '.'.join(classparts[:-1])
+                module = importlib.import_module(modulename)
+                args = json.loads(cfg.get(section, 'args'))
+                self.plugins[pluginname] = getattr(module, classname)(*args)
 
     def getCommand(self, code):
         code = self.getKeyCode(code)
@@ -98,6 +109,10 @@ class Remote(object):
             command = self.getCommand(code)
         if not command:
             return False
+        for pluginname, plugin in self.plugins.items():
+            if pluginname in command:
+                return plugin.command(**command[pluginname])
+
         if 'action' in command:
             result = self.remote.send_action(str(command['action']))
             time.sleep(0.2)

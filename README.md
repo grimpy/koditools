@@ -26,6 +26,10 @@ v = {"key": "m"} # remap key v to m
 [server]
 host = 192.168.1.3
 port = 8080
+
+[plugin.tv]
+class = lgtv.TV
+args = ["192.168.1.252"]
 ```
 
 
