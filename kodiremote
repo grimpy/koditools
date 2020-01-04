@@ -19,8 +19,9 @@ if __name__ == '__main__':
     logging.root.name = 'kodiremote'
     if args.verbose:
         logging.basicConfig(level=logging.DEBUG)
-    r = Remote(args.host, args.port, args.eport)
     if args.client:
+        r = Remote(args.host, args.port, args.eport, init=False)
         curses.wrapper(r.run)
     elif args.key:
+        r = Remote(args.host, args.port, args.eport)
         r.command(args.key)

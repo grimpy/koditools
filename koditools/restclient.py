@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 try:
     from urllib2 import Request, urlopen
-    str = unicode
+    str = unicode  # NOQA
 except ImportError:
     from urllib.request import Request, urlopen
 import json
@@ -18,12 +18,12 @@ class JsonRPC(object):
     def command(self, command, **kwargs):
         message = {'jsonrpc': '2.0', 'method': command, 'id': 1,
                    'params': kwargs}
-        logging.debug('Making command %s with args %s' % (command, kwargs))
+        logging.debug('Making command %s with args %s', command, kwargs)
         data = json.dumps(message)
         if isinstance(data, str):
             data = data.encode()
         result = self._post(data)
-        logging.debug('Result of command %s: %s' % (command, result))
+        logging.debug('Result of command %s: %s', command, result)
 
         return result
 
